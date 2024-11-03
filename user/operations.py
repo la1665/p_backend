@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from typing import Any, List, Optional, Sequence
 
-from backend.authentication.access_level import get_user
+from authentication.access_level import get_user
 from user.models import DBUser, UserType
 from user.schemas import UserBase, UserCreate, UserUpdate, UserInDB
 from authentication.auth import get_password_hash
