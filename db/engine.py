@@ -11,11 +11,6 @@ DATABASE_URL = (
     f"{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
 )
 
-# DATABASE_URL = (
-#     f"postgresql+asyncpg://postgres:xTRIHAvbozmK7vo5@services.irn8.chabokan.net:27202/rebecca"
-# )
-
-
 engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=True, future=True)
 async_session = async_sessionmaker(
     bind=engine,
