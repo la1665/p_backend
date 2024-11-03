@@ -1,8 +1,22 @@
-from sqlalchemy import Column, Float, Integer, String, ForeignKey, Boolean, DateTime, func
+from sqlalchemy import Column, Enum, Float, Integer, String, ForeignKey, Boolean, DateTime, Text, Table, func
+from sqlalchemy import Enum as sqlEnum
 from sqlalchemy.orm import relationship
+from enum import Enum
 
 from db.engine import Base
 
+
+class SettingType(Enum):
+    INT = "int"
+    FLOAT = "float"
+    STRING = "string"
+
+client_camera_association = Table(
+    'client_camera_association',
+    Base.metadata,
+    Column('client_id', Integer, ForeignKey('clients.id'), primary_key=True),
+    Column('camera_id', Integer, ForeignKey('cameras.id'), primary_key=True)
+)
 
 
 class Client(Base):
@@ -20,17 +34,20 @@ class Client(Base):
     lpr = relationship('LPR', back_populates='clients')
 
     # Relationship to hold multiple cameras
-    cameras = relationship('Camera', back_populates='client')
-
+    cameras = relationship(
+            'Camera',
+            secondary=client_camera_association,
+            back_populates='clients',
+            lazy="joined"
+        )
 
 class LPR(Base):
     __tablename__ = 'lprs'
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, index=True)
-    # ip = Column(String, nullable=False, index=True)
-    # port = Column(Integer, nullable=False)
-    # auth_token = Column(String, nullable=False)
+    value = Column(String(255), nullable=False)
+    type = Column(sqlEnum(SettingType), nullable=False)
     description = Column(String, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, nullable=False, default=func.now())

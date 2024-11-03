@@ -29,23 +29,23 @@ async def get_buildings(db: AsyncSession, skip: int = 0, limit: int = 10):
     return result.unique().scalars().all()
 
 async def create_building(db: AsyncSession, building):
-    new_building = Building(name=building.name,
-        location=building.location,
-        description=building.description)
     try:
+        new_building = Building(name=building.name,
+            location=building.location,
+            description=building.description)
         db.add(new_building)
         await db.commit()
         await db.refresh(new_building)
+        result = await db.execute(
+                select(Building)
+                .where(Building.id == new_building.id)
+                .options(selectinload(Building.gates))
+            )
+        new_building = result.scalars().first()
+        return new_building
     except SQLAlchemyError as e:
         await db.rollback()
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(e))
-    result = await db.execute(
-            select(Building)
-            .where(Building.id == new_building.id)
-            .options(selectinload(Building.gates))
-        )
-    new_building = result.scalars().first()
-    return new_building
 
 
 async def update_building(db: AsyncSession, building_id: int, building):
@@ -65,10 +65,10 @@ async def delete_building(db: AsyncSession, building_id: int):
     try:
         await db.delete(db_building)
         await db.commit()
+        return db_building
     except SQLAlchemyError as e:
         await db.rollback()
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(e))
-    return db_building
 
 
 # Gate operations
@@ -92,11 +92,11 @@ async def get_gates(db: AsyncSession, skip: int = 0, limit: int = 10):
 
 async def create_gate(db: AsyncSession, gate):
     db_building = await get_building(db, gate.building_id)
-    new_gate = Gate(name=gate.name,
-        gate_type=gate.gate_type,
-        description=gate.description,
-        building_id=db_building.id)
     try:
+        new_gate = Gate(name=gate.name,
+            gate_type=gate.gate_type,
+            description=gate.description,
+            building_id=db_building.id)
         db.add(new_gate)
         await db.commit()
         await db.refresh(new_gate)

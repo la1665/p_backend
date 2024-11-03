@@ -13,6 +13,13 @@ class Settings(BaseSettings):
     ADMIN_USERNAME: str | Any=None
     ADMIN_PASSWORD: str | Any=None
     ADMIN_EMAIL: str | Any=None
+    AUTH_TOKEN: Optional[str] = None
+    HMAC_SECRET_KEY: Optional[str] = None
+    MINIO_ENDPOINT: str
+    MINIO_ACCESS_KEY: Optional[str] = None
+    MINIO_SECRET_KEY: Optional[str] = None
+    MINIO_USE_SSL: bool=False
+    MINIO_BUCKET_NAME: str
 
     class Config:
         env_file = ".env"

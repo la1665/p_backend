@@ -27,8 +27,9 @@ async def get_current_user(
         )
         username = payload.get("sub")
         if username is None:
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Authorization Error: Could not validate credentials",
-             headers={"WWW-Authenticate": "Bearer"})
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED,
+                detail="Authorization Error: Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"})
         token_data = TokenData(username=username)
     except JWTError:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Authorization Error: Could not validate credentials",
@@ -42,14 +43,15 @@ async def get_current_user(
 
 async def get_current_active_user(current_user: UserInDB = Depends(get_current_user)):
     if not current_user.is_active:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "You don't have enough permissions to perform this action."
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Inactive user."
         )
     return current_user
 
 
 async def get_admin_user(current_user: UserInDB = Depends(get_current_active_user)):
     if current_user.user_type is not UserType.ADMIN:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "You don't have enough permissions to perform this action.."
+        raise HTTPException(status.HTTP_403_FORBIDDEN,
+            "You don't have enough permissions to perform this action."
         )
     return current_user
 

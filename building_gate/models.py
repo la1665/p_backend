@@ -26,6 +26,7 @@ class Building(Base):
 
     gates = relationship('Gate', back_populates='building', cascade='all, delete-orphan')
 
+
 class Gate(Base):
     __tablename__ = 'gates'
 

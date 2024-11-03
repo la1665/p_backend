@@ -1,7 +1,8 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
 
+from client.models import SettingType
 from camera.schemas import CameraInDB
 
 
@@ -14,38 +15,29 @@ class ClientCreate(ClientBase):
     lpr_id: int
     camera_ids: List[int] = []
 
-class ClientUpdate(BaseModel):
-    ip: str
-    port: int
-    auth_token: str
-    lpr_id: int
 
 
 class LPRBase(BaseModel):
     name: str
-    # ip: str
-    # port: int
-    # auth_token: str
-    description: Optional[str] = None
+    description: str
+    value: str
+    type: SettingType = Field(default=SettingType.STRING)
 
 class LPRCreate(LPRBase):
-    # gate_id: int
     pass
 
 class LPRUpdate(BaseModel):
     name: Optional[str] = None
-    # ip: Optional[str] = None
-    # port: Optional[int] = None
-    # auth_token: Optional[str] = None
     description: Optional[str] = None
-    # gate_id: Optional[int] = None
+    value: Optional[str] = None
+    type: Optional[SettingType] = None
 
 class LPRInDB(LPRBase):
     id: int
-    # gate_id: int
     created_at: datetime
     updated_at: datetime
     is_active: bool
+    clients: List['ClientInDB'] = []
 
     class Config:
         from_attributes = True
@@ -56,5 +48,6 @@ class ClientInDB(ClientBase):
     created_at: datetime
     updated_at: datetime
     is_active: bool
+    lpr_id: int
+    # lprs: List[LPRInDB] = []
     cameras: List[CameraInDB] = []
-    lprs: List[LPRInDB] = []

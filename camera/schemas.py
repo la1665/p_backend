@@ -20,21 +20,33 @@ class CameraSettingUpdate(BaseModel):
     value: Optional[str] = None
     setting_type: Optional[SettingType] = None
 
+class CameraSettingInDB(CameraSettingBase):
+    id: int
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
 
 class CameraBase(BaseModel):
     name: str
     location: str
+    latitude: str
+    longitude: str
 
 
 class CameraCreate(CameraBase):
-    setting_id: int
     gate_id: int
+    settings: List[int] = []
 
 
 class CameraUpdate(BaseModel):
     name: Optional[str] = None
     location: Optional[str] = None
-    setting_id: Optional[int] = None
+    latitude: Optional[str] = None
+    longitude: Optional[str] = None
     gate_id: Optional[int] = None
 
 
@@ -43,19 +55,8 @@ class CameraInDB(CameraBase):
     is_active: bool
     created_at: datetime
     updated_at: datetime
-    setting_id: int
     gate_id: int
-
-    class Config:
-        from_attributes = True
-
-
-class CameraSettingInDB(CameraSettingBase):
-    id: int
-    is_active: bool
-    created_at: datetime
-    updated_at: datetime
-    cameras: Optional[List[CameraInDB]] = []
+    settings: List[CameraSettingInDB] = []
 
     class Config:
         from_attributes = True
