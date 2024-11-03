@@ -5,11 +5,16 @@ from sqlalchemy.ext.declarative import declarative_base
 from settings import settings
 
 
+# DATABASE_URL = (
+#     f"postgresql+asyncpg://{settings.POSTGRES_USER}:"
+#     f"{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:"
+#     f"{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
+# )
+
 DATABASE_URL = (
-    f"postgresql+asyncpg://{settings.POSTGRES_USER}:"
-    f"{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:"
-    f"{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
+    f"postgresql+asyncpg://postgres:xTRIHAvbozmK7vo5@services.irn8.chabokan.net:27202/rebecca"
 )
+
 
 engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=True, future=True)
 async_session = async_sessionmaker(
