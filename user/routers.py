@@ -44,7 +44,7 @@ async def api_create_user(username: str = Form(...),
     user = UserCreate(
             username=username,
             email=email,
-            user_type=user_type,
+            user_type=user_type.value,
             password=password,
         )
     # db_user = await UserOperation(db).check_for_user(user.username, user.email)
@@ -54,8 +54,8 @@ async def api_create_user(username: str = Form(...),
         await validate_image_extension(profile_image.filename)
         await validate_image_content_type(profile_image.content_type)
         await validate_image_size(profile_image)
-    print(user_type)
-    print(user_type.value)
+    # print(user_type)
+    # print(user_type.value)
     new_user =  await UserOperation(db).create_user(user)
     if profile_image:
         try:
