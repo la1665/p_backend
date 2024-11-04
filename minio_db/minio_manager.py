@@ -18,6 +18,13 @@ minio_client = Minio(
     secret_key=settings.MINIO_SECRET_KEY,
     secure=settings.MINIO_USE_SSL
 )
+try:
+    # Attempt to list buckets
+    buckets = minio_client.list_buckets()
+    print("Connected to MinIO server successfully.")
+except Exception as e:
+    print(f"Failed to connect to MinIO server: {e}")
+
 
 # Ensure the bucket exists
 found = minio_client.bucket_exists(settings.MINIO_BUCKET_NAME)

@@ -20,13 +20,17 @@ def upload_image(file, user_id: int, filename: str) -> str:
     extension = os.path.splitext(filename)[1]
     object_name = f"user_{user_id}/{uuid4().hex}{extension}"
 
+    # Calculate file size
+    file.file.seek(0, os.SEEK_END)
+    file_size = file.file.tell()
+    file.file.seek(0)
+
     try:
         minio_client.put_object(
             bucket_name=settings.MINIO_BUCKET_NAME,
             object_name=object_name,
             data=file.file,
-            length=-1,  # -1 means the length is unknown; minio can handle streaming
-            part_size=10 * 1024 * 1024,  # 10 MB
+            length=file_size,  # -1 means the length is unknown; minio can handle streaming
             content_type=file.content_type
         )
     except S3Error as e:

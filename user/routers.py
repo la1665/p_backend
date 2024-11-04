@@ -62,7 +62,7 @@ async def api_create_user(username: str = Form(...),
             # Optionally, generate a pre-signed URL
             image_url = get_image_url(object_name)
             # Update the user's profile_image field
-            new_user.profile_image = object_name
+            # new_user.profile_image = object_name
             await UserOperation(db).update_user(new_user.id, {"profile_image": object_name})
             # You can return the URL or the object name based on your preference
             # Here, we return the object name and URL
@@ -74,9 +74,10 @@ async def api_create_user(username: str = Form(...),
                 }
             )
         except Exception as e:
+            print(f"Error uploading profile image: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to upload profile image."
+                detail=f"Failed to upload profile image: {str(e)}"
             )
     return UserInDB.from_orm(new_user)
 
