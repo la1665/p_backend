@@ -13,7 +13,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    profile_image: Optional[str] = None  # This can be a URL or object name
+    # profile_image: Optional[str] = None  # This can be a URL or object name
 
 
 class UserUpdate(BaseModel):

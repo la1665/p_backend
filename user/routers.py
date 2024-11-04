@@ -1,12 +1,13 @@
 import os
 import shutil
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, File
+from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, File, Form
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from enum import Enum
 from io import BytesIO
 from minio.error import S3Error
+from pydantic import EmailStr
 
 from db.engine import get_db
 from user.operations import UserOperation
@@ -20,6 +21,7 @@ from authentication.access_level import (get_user,
 )
 from minio_db.minio_manager import minio_client
 from settings import settings
+from user.models import UserType
 
 class TagType(Enum):
     ADMIN = "admin"
@@ -32,7 +34,19 @@ user_router = APIRouter()
 
 
 @user_router.post("/v1/users", status_code=status.HTTP_201_CREATED)
-async def api_create_user(user: UserCreate, profile_image: UploadFile=File(None), db: AsyncSession=Depends(get_db), current_user: UserInDB=Depends(get_admin_user)):
+async def api_create_user(username: str = Form(...),
+    email: EmailStr = Form(...),
+    user_type: UserType = Form(...),
+    password: str = Form(...),
+    profile_image: Optional[UploadFile]=File(None),
+    db: AsyncSession=Depends(get_db),
+    current_user: UserInDB=Depends(get_admin_user)):
+    user = UserCreate(
+            username=username,
+            email=email,
+            user_type=user_type,
+            password=password,
+        )
     # db_user = await UserOperation(db).check_for_user(user.username, user.email)
     # if db_user:
     #     raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, "Username/Email already exists.")
@@ -64,7 +78,7 @@ async def api_create_user(user: UserCreate, profile_image: UploadFile=File(None)
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to upload profile image."
             )
-    new_user
+    return UserInDB.from_orm(new_user)
 
 
 
