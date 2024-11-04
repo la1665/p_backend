@@ -10,7 +10,7 @@ ALLOWED_EXTENSIONS = ["jpeg", "jpg", "png"]
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 
 
-def validate_image_extension(filename: str):
+async def validate_image_extension(filename: str):
     """
     Validates the file extension of the uploaded image.
 
