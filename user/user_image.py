@@ -2,6 +2,7 @@ import os
 from minio import Minio
 from minio.error import S3Error
 from uuid import uuid4
+from datetime import timedelta
 
 from settings import settings
 from minio_db.minio_manager import minio_client
@@ -49,7 +50,8 @@ def get_image_url(object_name: str, expires: int = 3600) -> str:
     :return: Pre-signed URL as a string
     """
     try:
-        url = minio_client.presigned_get_object(settings.MINIO_BUCKET_NAME, object_name, expires=expires)
+        expires_delta = timedelta(seconds=expires)
+        url = minio_client.presigned_get_object(settings.MINIO_BUCKET_NAME, object_name, expires=expires_delta)
     except S3Error as e:
         print(f"Error generating pre-signed URL: {e}")
         raise e
