@@ -3,6 +3,7 @@ import shutil
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, File, Form
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 from enum import Enum
 from io import BytesIO
@@ -44,7 +45,7 @@ async def api_create_user(username: str = Form(...),
     user = UserCreate(
             username=username,
             email=email,
-            user_type=user_type.value,
+            user_type=user_type,
             password=password,
         )
     # db_user = await UserOperation(db).check_for_user(user.username, user.email)
@@ -69,10 +70,10 @@ async def api_create_user(username: str = Form(...),
             # Here, we return the object name and URL
             return JSONResponse(
                 status_code=status.HTTP_201_CREATED,
-                content={
+                content=jsonable_encoder({
                     **UserInDB.from_orm(new_user).dict(),
                     "profile_image_url": image_url
-                }
+                })
             )
         except Exception as e:
             print(f"Error uploading profile image: {e}")
